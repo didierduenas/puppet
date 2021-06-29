@@ -1,58 +1,69 @@
-package {
-'apache2':
+#TEST3 
+
+package { 'apache2':
   ensure   => present,
   name     => 'apache2',
   provider => apt
 }
 
-package {
-'php7.3':
-  ensure   => present
+#PHP 
+
+package { 'php7.3':
+  ensure   => present,
+  name     => 'php7.3',
+  provider => apt
 }
 
-file {
-'get Dokuwiki':
+#ETAPE 3 TELECHARGEMENT DU DOKUWIKI.TGZ
+
+file { 'download-dokuwiki':
   ensure => present,
-  path   => '/usr/src/dokuwiki.tgz',
   source => 'https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz',
+  path   => '/usr/src/dokuwiki.tgz'
 }
 
-exec {
-'dezip dokuwiki':
+#ETAPE 4 EXTRACTION DE L'ARCHIVE DOKUWIKI.TGZ
+
+exec { 'extract-dokuwiki':
   command => 'tar xavf dokuwiki.tgz',
+  cwd     => '/usr/src',
   path    => ['/usr/bin'],
-  cwd     => '/usr/src'
+  require => file['download-dokuwiki'],
+  require  => file['rename-dokuwiki-2020-07-29']
 }
 
-file {
-'mv dokuwiki':
+file { 'rename-dokuwiki-2020-07-29':
   ensure => present,
-  path   => '/usr/src/dokuwiki',
   source => '/usr/src/dokuwiki-2020-07-29',
+  path   => '/usr/src/dokuwiki'
 }
 
-file {
-'create directory for recettes.wiki':
-  ensure => directory,
+file { 'create new directory for recettes.wiki in /var/www and allow apache to write in':
+  ensure  => directory,
+  path    => '/var/www/recettes.wiki',
+  recurse => true,
+  owner   => 'www-data',
+  group   => 'www-data',
+  require  => file['Copy-dokuwiki-directory-contents-in-recettes-wiki']
+}
+
+file { 'create new directory for politique.wiki in /var/www and allow apache to write in':
+  ensure  => directory,
+  path    => '/var/www/politique.wiki',
+  recurse => true,
+  owner   => 'www-data',
+  group   => 'www-data',
+  require  => file['Copy-dokuwiki-directory-contents-in-politique-wiki']
+}
+
+file { 'Copy-dokuwiki-directory-contents-in-recettes-wiki':
+  ensure => present,
+  source => '/usr/src/dokuwiki',
   path   => '/var/www/recettes.wiki'
 }
 
-file {
-'create directory for politique.wiki':
-  ensure => directory,
+file { 'Copy-dokuwiki-directory-contents-in-politique-wiki':
+  ensure => present,
+  source => '/usr/src/dokuwiki',
   path   => '/var/www/politique.wiki'
-}
-
-file {
-'copy dokuwiki for recettes':
-  ensure => present,
-  path   => '/var/www/recettes.wiki',
-  source => '/usr/src/dokuwiki'
-}
-
-file {
-'copy dokuwiki for politique':
-  ensure => present,
-  path   => '/var/www/politique.wiki',
-  source => '/usr/src/dokuwiki'
 }
