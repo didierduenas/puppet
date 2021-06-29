@@ -28,7 +28,7 @@ file {
 'mv dokuwiki':
   ensure => present,
   path   => '/usr/src/dokuwiki',
-  source => '/usr/src/dokuwiki-2020-07-29',
+  source => '/usr/src/dokuwiki-stable',
 }
 
 file {
