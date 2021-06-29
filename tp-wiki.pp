@@ -1,4 +1,4 @@
-#TEST3 
+#TEST3 ONLYFILE
 
 package { 'apache2':
   ensure   => present,
@@ -29,12 +29,12 @@ exec { 'extract-dokuwiki':
   cwd     => '/usr/src',
   path    => ['/usr/bin'],
   require => file['download-dokuwiki'],
-  require  => file['rename-dokuwiki-2020-07-29']
+  onlyfile  => test -d /usr/src/dokuwiki-stable']
 }
 
 file { 'rename-dokuwiki-2020-07-29':
   ensure => present,
-  source => '/usr/src/dokuwiki-2020-07-29',
+  source => '/usr/src/dokuwiki-stable',
   path   => '/usr/src/dokuwiki'
 }
 
