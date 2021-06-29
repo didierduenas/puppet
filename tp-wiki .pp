@@ -1,8 +1,10 @@
-#TEST ONLYFILE
+#TEST 
  
-#définir une classe "dokuwiki" pour les instruction liées à l'installation de dokuwiki
-#définir un node pour server0
-#utiliser la classe "dokuwiki"
+#Déclarer deux nodes : server0 et server1
+#faire en sorte que dokuwiki soit installé sur les deux nodes
+#déployer politique.wiki uniquement sur node0
+#déployer recettes.wiki uniquement sur node1
+#essayer d'adapter ce que vous venez de faire en utilisant des variables https://puppet.com/docs/puppet/6/lang_variables.html
 
 class dokuwiki {
     package {
@@ -25,18 +27,18 @@ class dokuwiki {
             cwd => '/usr/src',
             path => ['/usr/bin'],
             require => File['download dokuwiki'],
-            unless => 'test -d /usr/src/dokuwiki-2020-07-29/'
+            unless => 'test -d /usr/src/dokuwiki-stable/'
     }
     file {
         'rename dokuwiki':
             path => '/usr/src/dokuwiki',
             ensure => present,
-            source => '/usr/src/dokuwiki-2020-07-29',
+            source => '/usr/src/dokuwiki-stable',
             require => Exec['extract dokuwiki']
     }
     file {
         'delete extracted dokuwiki':
-            path => '/usr/src/dokuwiki-2020-07-29',
+            path => '/usr/src/dokuwiki-stable',
             ensure => absent,
             require => File['rename dokuwiki']
     }
